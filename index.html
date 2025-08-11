@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Messages pour le Pull</title>
+</head>
+<body>
+<h1>Laisse un message pour le pull</h1>
+<form id="messageForm">
+  <label for="message">Ton message :</label><br />
+  <textarea id="message" rows="4" cols="50" required></textarea><br /><br />
+  <button type="submit">Envoyer</button>
+</form>
+<p id="status"></p>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+<script>
+// --- Mets ici ta config Firebase ---
+const firebaseConfig = {
+  apiKey: "AIzaSyCCDfmT9VAJ3uFFuss8ivFJcPf-imz5Et8",
+  authDomain: "pull-messages-f5406.firebaseapp.com",
+  projectId: "pull-messages-f5406",
+  storageBucket: "pull-messages-f5406.firebasestorage.app",
+  messagingSenderId: "162610796080",
+  appId: "1:162610796080:web:05f0e8e385187ff24c3ff5"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// --- Identifiant unique du pull, change pour chaque pull ---
+const pullId = "PULL001";
+
+const form = document.getElementById('messageForm');
+const status = document.getElementById('status');
+
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const message = document.getElementById('message').value.trim();
+  if (!message) return;
+
+  db.collection('messages').add({
+    pullId: pullId,
+    message: message,
+    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(() => {
+    status.textContent = "Message envoyé, merci !";
+    form.reset();
+  }).catch((error) => {
+    status.textContent = "Erreur: " + error.message;
+  });
+});
+</script>
+</body>
+</html>
